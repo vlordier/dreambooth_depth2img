@@ -508,7 +508,8 @@ def main(args):
             for example in tqdm(
                 sample_dataloader, desc="Generating class images", disable=not accelerator.is_local_main_process
             ):
-                images = pipeline(example["prompt"]).images
+                negative_prompt = ["ugly, drawing, cartoon, painting"]*len(example["prompt"])
+                images = pipeline(prompt=example["prompt"], negative_prompt=negative_prompt).images
 
                 for i, image in enumerate(images):
                     hash_image = hashlib.sha1(image.tobytes()).hexdigest()
@@ -538,6 +539,7 @@ def main(args):
 
     # Load the tokenizer
     if args.tokenizer_name:
+        breakpoint()
         tokenizer = AutoTokenizer.from_pretrained(
             args.tokenizer_name,
             revision=args.revision,
@@ -547,7 +549,7 @@ def main(args):
         tokenizer = AutoTokenizer.from_pretrained(
             args.pretrained_model_name_or_path,
             subfolder="tokenizer",
-            revision=args.revision,
+#            revision=args.revision,
             use_fast=False,
         )
 
